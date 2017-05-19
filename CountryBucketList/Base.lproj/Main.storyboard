@@ -1,26 +1,134 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11134" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="MoR-FR-EvL">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11106"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </view>
+                    <navigationItem key="navigationItem" id="bPq-vM-246">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="1Jf-Ac-Htu">
+                            <view key="customView" contentMode="scaleToFill" id="Uru-RX-5G8">
+                                <rect key="frame" x="16" y="0.0" width="215" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vyv-gj-4d5">
+                                        <rect key="frame" x="0.0" y="11" width="131" height="22"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="22" id="r4p-Qj-VCi"/>
+                                            <constraint firstAttribute="width" constant="131" id="rpb-cK-yaO"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="17"/>
+                                        <inset key="titleEdgeInsets" minX="-37" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <inset key="imageEdgeInsets" minX="115" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <state key="normal" title="North America" image="dropdown-arrow">
+                                            <color key="titleColor" red="0.062745098039215685" green="0.19607843137254902" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
+                                        </state>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ppS-Td-BFZ">
+                                        <rect key="frame" x="145" y="7" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="mSB-yP-Udw"/>
+                                            <constraint firstAttribute="height" constant="30" id="xL5-xo-aRg"/>
+                                        </constraints>
+                                        <state key="normal" image="bucketlist"/>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EKb-BH-leV">
+                                        <rect key="frame" x="185" y="7" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="30" id="Nfo-6b-gBA"/>
+                                            <constraint firstAttribute="width" constant="30" id="deT-uE-Kud"/>
+                                        </constraints>
+                                        <state key="normal" image="been-here"/>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="vyv-gj-4d5" firstAttribute="centerY" secondItem="Uru-RX-5G8" secondAttribute="centerY" id="A4X-HW-utP"/>
+                                    <constraint firstItem="EKb-BH-leV" firstAttribute="centerY" secondItem="Uru-RX-5G8" secondAttribute="centerY" id="Ral-px-qMz"/>
+                                    <constraint firstItem="ppS-Td-BFZ" firstAttribute="centerY" secondItem="Uru-RX-5G8" secondAttribute="centerY" id="aho-cT-Nrv"/>
+                                    <constraint firstItem="EKb-BH-leV" firstAttribute="leading" secondItem="ppS-Td-BFZ" secondAttribute="trailing" constant="10" id="b0a-YY-BgG"/>
+                                    <constraint firstAttribute="trailing" secondItem="EKb-BH-leV" secondAttribute="trailing" id="g02-jr-XWi"/>
+                                    <constraint firstItem="vyv-gj-4d5" firstAttribute="leading" secondItem="Uru-RX-5G8" secondAttribute="leading" id="owW-IQ-pZd"/>
+                                </constraints>
+                            </view>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="kck-2M-m8j">
+                            <view key="customView" contentMode="scaleToFill" id="iv1-bN-nYn">
+                                <rect key="frame" x="290" y="0.0" width="69" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XRC-L1-GYj">
+                                        <rect key="frame" x="0.0" y="7" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="Vl2-Ye-Yv0"/>
+                                            <constraint firstAttribute="height" constant="30" id="qkX-d7-VVa"/>
+                                        </constraints>
+                                        <state key="normal" image="map"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IVw-zC-yjc">
+                                        <rect key="frame" x="44" y="9.5" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="paN-c4-QY4"/>
+                                            <constraint firstAttribute="height" constant="25" id="wHE-mI-kNq"/>
+                                        </constraints>
+                                        <state key="normal" image="list"/>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="XRC-L1-GYj" firstAttribute="leading" secondItem="iv1-bN-nYn" secondAttribute="leading" id="iIg-Mk-vwS"/>
+                                    <constraint firstItem="IVw-zC-yjc" firstAttribute="centerY" secondItem="iv1-bN-nYn" secondAttribute="centerY" id="orF-wV-Xc9"/>
+                                    <constraint firstAttribute="trailing" secondItem="IVw-zC-yjc" secondAttribute="trailing" id="uwv-3n-PXB"/>
+                                    <constraint firstItem="XRC-L1-GYj" firstAttribute="centerY" secondItem="iv1-bN-nYn" secondAttribute="centerY" id="y7L-sM-Ssi"/>
+                                </constraints>
+                            </view>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="424.80000000000001" y="33.733133433283363"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Wlt-4k-APm">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="MoR-FR-EvL" sceneMemberID="viewController">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="Xan-7S-Cly">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="kHo-G5-yu5"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kVi-VR-G6u" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-298" y="34"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="been-here" width="16" height="16"/>
+        <image name="bucketlist" width="16" height="16"/>
+        <image name="dropdown-arrow" width="16" height="16"/>
+        <image name="list" width="16" height="16"/>
+        <image name="map" width="16" height="16"/>
+    </resources>
 </document>
