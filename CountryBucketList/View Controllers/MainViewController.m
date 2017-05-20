@@ -187,7 +187,13 @@
         
         [self makeAllButtonActive];
         
-        [pageViewController setViewControllers:@[pages[0]] direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:nil];
+        __weak typeof(self) weakSelf = self;
+        [pageViewController setViewControllers:@[pages[0]] direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:^(BOOL finished) {
+            
+            if (!weakSelf.mapView.hidden) {
+                [weakSelf addMapAnnotations];
+            }
+        }];
     }
 }
 
@@ -205,7 +211,13 @@
         
         [self makeBucketListButtonActive];
         
-        [pageViewController setViewControllers:@[pages[1]] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:nil];
+        __weak typeof(self) weakSelf = self;
+        [pageViewController setViewControllers:@[pages[1]] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:^(BOOL finished) {
+            
+            if (!weakSelf.mapView.hidden) {
+                [weakSelf addMapAnnotations];
+            }
+        }];
     }
 }
 
@@ -224,9 +236,7 @@
         [self.viewModeButton setImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
         self.mapView.hidden = NO;
         
-        if (((currentPage == 0 && countries.count > 0) || (currentPage == 1 && bucketList.count > 0)) && self.mapView.annotations.count == 0) {
-            [self addMapAnnotations];
-        }
+        [self addMapAnnotations];
     }
     else {
         [self.viewModeButton setImage:[UIImage imageNamed:@"map"] forState:UIControlStateNormal];
@@ -383,6 +393,36 @@
     return annotationView;
 }
 
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
+    
+    NSString *alphaCode = view.annotation.title;
+    Country *country;
+    if (currentPage == 0) { //All Countries
+        
+        NSUInteger index = [filteredCountries indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
+            Country *object = (Country *)obj;
+            return [object.alphaCode isEqualToString:alphaCode];
+        }];
+        
+        if (index != NSNotFound) {
+            country = filteredCountries[index];
+        }
+    }
+    else { //Bucket List
+        
+        NSUInteger index = [filteredBucketList indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
+            Country *object = (Country *)obj;
+            return [object.alphaCode isEqualToString:alphaCode];
+        }];
+        
+        if (index != NSNotFound) {
+            country = filteredBucketList[index];
+        }
+    }
+    
+    [self showCountryView:country];
+}
+
 #pragma mark - Country List View Controller Delegate Methods
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController pageDidAppear:(int)pageIndex {
@@ -401,27 +441,7 @@
     
     [self resignSearchBar];
     [self hidePicker];
-    [self showDimView];
-    
-    if (!countryViewController) {
-        countryViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CountryViewController"];
-        countryViewController.view.frame = CGRectMake([[UIScreen mainScreen] bounds].size.width / 2.0 - 140.0, [[UIScreen mainScreen] bounds].size.height / 2.0 - 194.0, 280.0, 388.0);
-        countryViewController.view.clipsToBounds = YES;
-        countryViewController.view.layer.cornerRadius = 15.0;
-    }
-    
-    countryViewController.country = country;
-    [self.navigationController.view addSubview:countryViewController.view];
-    
-    NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:280.0];
-    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:388.0];
-    [countryViewController.view addConstraints:@[widthConstraint, heightConstraint]];
-    
-    NSLayoutConstraint *centerXConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.navigationController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-    NSLayoutConstraint *centerYConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.navigationController.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
-    [self.navigationController.view addConstraints:@[centerXConstraint, centerYConstraint]];
-    
-    [countryViewController loadData];
+    [self showCountryView:country];
 }
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController countryAddedToBucketList:(Country *)country {
@@ -471,6 +491,33 @@
         CountryListViewController *allCountriesViewController = pages[0];
         [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList];
     }
+}
+
+#pragma mark - Country View Methods
+
+- (void)showCountryView:(Country *)country {
+    
+    [self showDimView];
+    
+    if (!countryViewController) {
+        countryViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CountryViewController"];
+        countryViewController.view.frame = CGRectMake([[UIScreen mainScreen] bounds].size.width / 2.0 - 140.0, [[UIScreen mainScreen] bounds].size.height / 2.0 - 194.0, 280.0, 388.0);
+        countryViewController.view.clipsToBounds = YES;
+        countryViewController.view.layer.cornerRadius = 15.0;
+    }
+    
+    countryViewController.country = country;
+    [self.navigationController.view addSubview:countryViewController.view];
+    
+    NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:280.0];
+    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:388.0];
+    [countryViewController.view addConstraints:@[widthConstraint, heightConstraint]];
+    
+    NSLayoutConstraint *centerXConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.navigationController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+    NSLayoutConstraint *centerYConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.navigationController.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
+    [self.navigationController.view addConstraints:@[centerXConstraint, centerYConstraint]];
+    
+    [countryViewController loadData];
 }
 
 #pragma mark - Picker Methods
