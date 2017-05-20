@@ -90,7 +90,7 @@
     
     NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        if (error != nil) { //Fail
+        if (error) { //Fail
             
             dispatch_async(dispatch_get_main_queue(), ^(void){
                 
@@ -105,7 +105,7 @@
         }
         else { //Success
             
-            if (data != nil) {
+            if (data) {
                 
                 NSArray *array = [NSJSONSerialization JSONObjectWithData:data options: NSJSONReadingMutableContainers error:nil];
                 for (NSDictionary *json in array) {
@@ -146,8 +146,8 @@
                     }
                     
                     NSArray *coordinates = json[@"latlng"];
-                    if (coordinates != nil && coordinates.count > 0) {
-                        country.coordinates = CLLocationCoordinate2DMake([coordinates[0] doubleValue], [coordinates[1] doubleValue]);
+                    if (coordinates && coordinates.count > 0) {
+                        country.coordinate = CLLocationCoordinate2DMake([coordinates[0] doubleValue], [coordinates[1] doubleValue]);
                     }
                     
                     [countries addObject:country];
@@ -220,8 +220,13 @@
 - (IBAction)viewModeButtonTapped {
     
     if (self.mapView.hidden) {
+        
         [self.viewModeButton setImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
         self.mapView.hidden = NO;
+        
+        if (((currentPage == 0 && countries.count > 0) || (currentPage == 1 && bucketList.count > 0)) && self.mapView.annotations.count == 0) {
+            [self addMapAnnotations];
+        }
     }
     else {
         [self.viewModeButton setImage:[UIImage imageNamed:@"map"] forState:UIControlStateNormal];
@@ -338,6 +343,46 @@
     return nil;
 }
 
+#pragma mark - Map Methods
+
+- (void)addMapAnnotations {
+    
+    [self.mapView removeAnnotations:self.mapView.annotations];
+    
+    if (currentPage == 0) { //All Countries
+        
+        for (Country *country in filteredCountries) {
+            
+            MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+            annotation.coordinate = country.coordinate;
+            annotation.title = country.alphaCode;
+            [self.mapView addAnnotation:annotation];
+        }
+    }
+    else { //Bucket List
+        
+        for (Country *country in filteredBucketList) {
+            
+            MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
+            annotation.coordinate = country.coordinate;
+            annotation.title = country.alphaCode;
+            [self.mapView addAnnotation:annotation];
+        }
+    }
+}
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
+
+    MKAnnotationView *annotationView = (MKAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:@"FlagAnnotation"];
+    if (!annotationView) {
+        annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:@"FlagAnnotation"];
+    }
+    
+    annotationView.image = [UIImage imageNamed:annotation.title];
+    
+    return annotationView;
+}
+
 #pragma mark - Country List View Controller Delegate Methods
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController pageDidAppear:(int)pageIndex {
@@ -358,7 +403,7 @@
     [self hidePicker];
     [self showDimView];
     
-    if (countryViewController == nil) {
+    if (!countryViewController) {
         countryViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CountryViewController"];
         countryViewController.view.frame = CGRectMake([[UIScreen mainScreen] bounds].size.width / 2.0 - 140.0, [[UIScreen mainScreen] bounds].size.height / 2.0 - 194.0, 280.0, 388.0);
         countryViewController.view.clipsToBounds = YES;

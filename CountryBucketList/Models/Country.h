@@ -21,6 +21,6 @@
 @property (nonatomic) int population;
 @property (nonatomic, strong) NSMutableArray *languages;
 @property (nonatomic, strong) NSMutableArray *currencies;
-@property (nonatomic) CLLocationCoordinate2D coordinates;
+@property (nonatomic) CLLocationCoordinate2D coordinate;
 
 @end

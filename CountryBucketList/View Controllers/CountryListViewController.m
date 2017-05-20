@@ -36,7 +36,7 @@
     }
     else { //Bucket List
         
-        if (bucketList == nil) {
+        if (!bucketList) {
             
             self.noCountriesLabel.text = EMPTY_BUCKETLIST;
             self.noCountriesLabel.hidden = NO;
