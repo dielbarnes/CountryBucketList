@@ -13,4 +13,6 @@
 
 @property (nonatomic, strong) Country *country;
 
+- (void)loadData;
+
 @end

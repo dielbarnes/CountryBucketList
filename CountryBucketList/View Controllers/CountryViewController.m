@@ -26,11 +26,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.infoTableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.infoTableView.frame.size.width, 10.0)];
+    self.infoTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (void)loadData {
+    
     self.flagView.image = self.country.flag;
     self.nameLabel.text = self.country.name;
     self.regionLabel.text = self.country.region;
-    
-    self.infoTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     languages = @"";
     for (NSString *language in self.country.languages) {
@@ -47,6 +51,8 @@
             currencies = [currencies stringByAppendingString:@", "];
         }
     }
+    
+    [self.infoTableView reloadData];
 }
 
 #pragma mark - Table View Methods
@@ -64,37 +70,42 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 44.0;
+    return 50.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"InfoCell"];
     
+    UILabel *textLabel = [cell viewWithTag:123];
+    UILabel *detailTextLabel = [cell viewWithTag:456];
+    
     if (indexPath.row == 0) {
         
-        cell.textLabel.text = @"Capital";
-        cell.detailTextLabel.text = self.country.capital;
+        textLabel.text = @"Capital";
+        detailTextLabel.text = self.country.capital;
     }
     else if (indexPath.row == 1) {
         
-        cell.textLabel.text = @"Area";
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2fM sq. km", self.country.area/1000000.0];
+        textLabel.text = @"Area";
+        detailTextLabel.text = [NSString stringWithFormat:@"%.2fM sq. km", self.country.area/1000000.0];
     }
     else if (indexPath.row == 2) {
         
-        cell.textLabel.text = @"Population";
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2fM", self.country.population/1000000.0];
+        textLabel.text = @"Population";
+        detailTextLabel.text = [NSString stringWithFormat:@"%.2fM", self.country.population/1000000.0];
     }
     else if (indexPath.row == 3) {
         
-        cell.textLabel.text = @"Languages";
-        cell.detailTextLabel.text = languages;
+        textLabel.text = @"Languages";
+        detailTextLabel.text = languages;
     }
     else {
         
-        cell.textLabel.text = @"Currencies";
-        cell.detailTextLabel.text = currencies;
+        textLabel.text = @"Currencies";
+        detailTextLabel.text = currencies;
+        
+        cell.separatorInset = UIEdgeInsetsMake(0, 3000.0, 0, 0);
     }
     
     return cell;

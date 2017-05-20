@@ -22,13 +22,13 @@
 
 @end
 
-@interface CountryListViewController : UITableViewController
+@interface CountryListViewController : UIViewController
 
 @property (nonatomic, weak, nullable) id <CountryListViewControllerDelegate> delegate;
 @property (nonatomic) int pageIndex;
 
-- (void)reloadData:(nonnull NSMutableArray *)updatedCountries;
-- (void)showNoResultsLabel;
-- (void)hideNoResultsLabel;
+- (void)reloadData:(nullable NSMutableArray *)updatedCountries bucketList:(nonnull NSMutableArray *)updatedBucketList;
+- (void)showNoResultsText;
+- (void)hideNoResultsText;
 
 @end

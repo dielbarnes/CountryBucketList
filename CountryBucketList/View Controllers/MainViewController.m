@@ -6,6 +6,7 @@
 //  Copyright © 2017 Diel Barnes. All rights reserved.
 //
 
+#import <MapKit/MapKit.h>
 #import "MainViewController.h"
 #import "CountryListViewController.h"
 #import "CountryViewController.h"
@@ -13,7 +14,7 @@
 #define COLOR_PINK [UIColor colorWithRed:254.0/255.0 green:0/255.0 blue:89.0/255.0 alpha:1.0]
 #define COLOR_TEXT [UIColor colorWithRed:16.0/255.0 green:50.0/255.0 blue:51.0/255.0 alpha:1.0]
 
-@interface MainViewController () <UISearchBarDelegate, UIPageViewControllerDataSource, CountryListViewControllerDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+@interface MainViewController () <UISearchBarDelegate, UIPageViewControllerDataSource, CountryListViewControllerDelegate, MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
 {
     NSMutableArray *countries;
     NSMutableArray *filteredCountries;
@@ -24,14 +25,20 @@
     UIPageViewController *pageViewController;
     NSMutableArray *pages;
     int currentPage;
+    
+    CountryViewController *countryViewController;
+    
+    UIView *dimView;
 }
 
 @property (nonatomic, strong) IBOutlet UIButton *allButton;
 @property (nonatomic, strong) IBOutlet UIButton *bucketListButton;
 @property (nonatomic, strong) IBOutlet UIButton *viewModeButton;
+@property (nonatomic, strong) IBOutlet UIView *searchFilterView;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) IBOutlet UIButton *regionButton;
 @property (nonatomic, strong) IBOutlet UIView *pageView;
+@property (nonatomic, strong) IBOutlet MKMapView *mapView;
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, strong) IBOutlet UIPickerView *picker;
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *pickerBottomSpace;
@@ -51,7 +58,14 @@
     self.allButton.layer.cornerRadius = 20.0;
     self.bucketListButton.layer.cornerRadius = 20.0;
     
+    [self.searchFilterView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(resignSearchBar)]];
+    
     [[UITextField appearance] setFont:[UIFont fontWithName:@"Avenir" size:17.0]];
+    
+    dimView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)];
+    dimView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
+    [dimView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideDimView)]];
+    [self.navigationController.view addSubview:dimView];
     
     [self setupPageView];
     
@@ -81,6 +95,7 @@
             dispatch_async(dispatch_get_main_queue(), ^(void){
                 
                 [self.activityIndicator stopAnimating];
+                [self hideDimView];
                 
                 UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Failed To Get Countries" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
@@ -117,8 +132,17 @@
                     NSArray *currencies = json[@"currencies"];
                     for (NSDictionary *currency in currencies) {
                         
-                        NSString *currencyString = [NSString stringWithFormat:@"%@ %@", currency[@"symbol"], currency[@"name"]];
-                        [country.currencies addObject:currencyString];
+                        NSString *currencyString = @"";
+                        if (![currency[@"symbol"] isKindOfClass:[NSNull class]]) {
+                            currencyString = [currencyString stringByAppendingString:[NSString stringWithFormat:@"%@ ", currency[@"symbol"]]];
+                        }
+                        if (![currency[@"name"] isKindOfClass:[NSNull class]]) {
+                            currencyString = [currencyString stringByAppendingString:[NSString stringWithFormat:@"%@", currency[@"name"]]];
+                        }
+                        
+                        if (currencyString.length > 0) {
+                            [country.currencies addObject:currencyString];
+                        }
                     }
                     
                     NSArray *coordinates = json[@"latlng"];
@@ -128,19 +152,26 @@
                     
                     [countries addObject:country];
                     
-                    if (![regions containsObject:country.region]) {
+                    if (country.region.length > 0 && ![regions containsObject:country.region]) {
                         [regions addObject:country.region];
                     }
                 }
                 
+                NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
+                countries = [[countries sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
                 [filteredCountries addObjectsFromArray:countries];
+                
+                //Update UI
                 
                 dispatch_async(dispatch_get_main_queue(), ^(void){
                     
                     [self.activityIndicator stopAnimating];
+                    [self hideDimView];
                     
                     CountryListViewController *countryListViewController = pages[0];
-                    [countryListViewController reloadData:filteredCountries];
+                    [countryListViewController reloadData:filteredCountries bucketList:filteredBucketList];
+                    
+                    [self.picker reloadAllComponents];
                 });
             }
         }
@@ -188,12 +219,21 @@
 
 - (IBAction)viewModeButtonTapped {
     
+    if (self.mapView.hidden) {
+        [self.viewModeButton setImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
+        self.mapView.hidden = NO;
+    }
+    else {
+        [self.viewModeButton setImage:[UIImage imageNamed:@"map"] forState:UIControlStateNormal];
+        self.mapView.hidden = YES;
+    }
 }
 
 #pragma mark - Search Bar Methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
     [searchBar setShowsCancelButton:YES animated:YES];
+    [self hidePicker];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
@@ -209,15 +249,17 @@
         [filteredBucketList removeAllObjects];
         [filteredBucketList addObjectsFromArray:bucketList];
         
-        if (currentPage == 0) {
+        if (currentPage == 0) { //All Countries
+            
             CountryListViewController *countryListViewController = pages[0];
-            [countryListViewController hideNoResultsLabel];
-            [countryListViewController reloadData:filteredCountries];
+            [countryListViewController hideNoResultsText];
+            [countryListViewController reloadData:filteredCountries bucketList:filteredBucketList];
         }
-        else {
+        else { //Bucket List
+            
             CountryListViewController *countryListViewController = pages[1];
-            [countryListViewController hideNoResultsLabel];
-            [countryListViewController reloadData:filteredBucketList];
+            [countryListViewController hideNoResultsText];
+            [countryListViewController reloadData:filteredBucketList bucketList:filteredBucketList];
         }
     }
     else {
@@ -232,6 +274,10 @@
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [self.searchBar resignFirstResponder];
+}
+
+- (void)resignSearchBar {
     [self.searchBar resignFirstResponder];
 }
 
@@ -256,7 +302,7 @@
     }
     
     pageViewController.dataSource = self;
-    [pageViewController setViewControllers:@[pages[0]] direction:UIPageViewControllerNavigationDirectionForward animated:false completion:nil];
+    [pageViewController setViewControllers:@[pages[0]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     CGRect frame = self.pageView.frame;
     frame.origin.y = 0;
@@ -296,8 +342,6 @@
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController pageDidAppear:(int)pageIndex {
     
-    NSLog(@"page %i", pageIndex);
-    
     currentPage = pageIndex;
     
     if (currentPage == 0) {
@@ -310,24 +354,89 @@
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController countrySelected:(Country *)country {
     
-    CountryViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CountryViewController"];
-    viewController.country = country;
+    [self resignSearchBar];
+    [self hidePicker];
+    [self showDimView];
+    
+    if (countryViewController == nil) {
+        countryViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"CountryViewController"];
+        countryViewController.view.frame = CGRectMake([[UIScreen mainScreen] bounds].size.width / 2.0 - 140.0, [[UIScreen mainScreen] bounds].size.height / 2.0 - 194.0, 280.0, 388.0);
+        countryViewController.view.clipsToBounds = YES;
+        countryViewController.view.layer.cornerRadius = 15.0;
+    }
+    
+    countryViewController.country = country;
+    [self.navigationController.view addSubview:countryViewController.view];
+    
+    NSLayoutConstraint *widthConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:280.0];
+    NSLayoutConstraint *heightConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:388.0];
+    [countryViewController.view addConstraints:@[widthConstraint, heightConstraint]];
+    
+    NSLayoutConstraint *centerXConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.navigationController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
+    NSLayoutConstraint *centerYConstraint = [NSLayoutConstraint constraintWithItem:countryViewController.view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.navigationController.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0];
+    [self.navigationController.view addConstraints:@[centerXConstraint, centerYConstraint]];
+    
+    [countryViewController loadData];
 }
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController countryAddedToBucketList:(Country *)country {
+
+    //Add country to bucket list
+
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
+
+    [bucketList addObject:country];
+    bucketList = [[bucketList sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
+
+    [filteredBucketList addObject:country];
+    filteredBucketList = [[filteredBucketList sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
     
+    //Current page is always 0 (All Countries)
+    //Update Bucket List page
+
+    CountryListViewController *bucketListViewController = pages[1];
+    [bucketListViewController reloadData:nil bucketList:filteredBucketList];
 }
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController countryRemovedFromBucketList:(Country *)country {
     
+    //Remove country from bucket list
+    
+    NSUInteger index1 = [bucketList indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
+        Country *object = (Country *)obj;
+        return [object.name isEqualToString:country.name];
+    }];
+    [bucketList removeObjectAtIndex:index1];
+    
+    NSUInteger index2 = [filteredBucketList indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
+        Country *object = (Country *)obj;
+        return [object.name isEqualToString:country.name];
+    }];
+    [filteredBucketList removeObjectAtIndex:index2];
+    
+    //Update the other page
+    
+    if (currentPage == 0) { //All Countries
+        
+        CountryListViewController *bucketListViewController = pages[1];
+        [bucketListViewController reloadData:nil bucketList:filteredBucketList];
+    }
+    else { //Bucket List
+        
+        CountryListViewController *allCountriesViewController = pages[0];
+        [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList];
+    }
 }
 
 #pragma mark - Picker Methods
 
 - (IBAction)showPicker {
     
-    self.pickerBottomSpace.constant = 0;
+    [self resignSearchBar];
     
+    [self showDimView];
+    
+    self.pickerBottomSpace.constant = 0;
     [UIView animateWithDuration:0.4 animations:^{
         [self.view layoutIfNeeded];
     }];
@@ -335,8 +444,7 @@
 
 - (void)hidePicker {
     
-    self.pickerBottomSpace.constant = -self.picker.frame.size.height;;
-    
+    self.pickerBottomSpace.constant = -self.picker.frame.size.height;
     [UIView animateWithDuration:0.4 animations:^{
         [self.view layoutIfNeeded];
     }];
@@ -350,13 +458,35 @@
     return regions.count;
 }
 
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    return regions[row];
+- (NSAttributedString *)pickerView:(UIPickerView *)pickerView attributedTitleForRow:(NSInteger)row forComponent:(NSInteger)component {
+
+    NSMutableAttributedString *title = [[NSMutableAttributedString alloc] initWithString:regions[row] attributes:@{ NSForegroundColorAttributeName: COLOR_TEXT, NSFontAttributeName: [UIFont fontWithName:@"Avenir" size:17.0]}];
+    return title;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     [self.regionButton setTitle:regions[row] forState:UIControlStateNormal];
     [self hidePicker];
+}
+
+#pragma mark - Dim View Methods
+
+- (void)showDimView {
+    dimView.hidden = NO;
+    [UIView animateWithDuration:0.4 animations:^{
+        dimView.alpha = 0.6;
+    }];
+}
+
+- (void)hideDimView {
+    
+    [countryViewController.view removeFromSuperview];
+    
+    [UIView animateWithDuration:0.4 animations:^{
+        dimView.alpha = 0;
+    } completion:^(BOOL finished) {
+        dimView.hidden = YES;
+    }];
 }
 
 @end
