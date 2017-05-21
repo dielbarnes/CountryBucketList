@@ -13,7 +13,8 @@
 @interface Country : NSObject
 
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *alphaCode;
+@property (nonatomic, strong) NSString *alpha2Code;
+@property (nonatomic, strong) NSString *alpha3Code;
 @property (nonatomic, strong) UIImage *flag;
 @property (nonatomic, strong) NSString *region;
 @property (nonatomic, strong) NSString *capital;
@@ -22,5 +23,6 @@
 @property (nonatomic, strong) NSMutableArray *languages;
 @property (nonatomic, strong) NSMutableArray *currencies;
 @property (nonatomic) CLLocationCoordinate2D coordinate;
+@property (nonatomic, strong) NSMutableArray *polygons;
 
 @end

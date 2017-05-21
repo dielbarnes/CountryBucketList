@@ -16,6 +16,7 @@
     if (self) {
         self.languages = [[NSMutableArray alloc] init];
         self.currencies = [[NSMutableArray alloc] init];
+        self.polygons = [[NSMutableArray alloc] init];
     }
     return self;
 }

@@ -12,6 +12,7 @@
 		977A1D201ED02BE30078EBF1 /* CountryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 977A1D1F1ED02BE30078EBF1 /* CountryListViewController.m */; };
 		977A1D251ED035080078EBF1 /* Country.m in Sources */ = {isa = PBXBuildFile; fileRef = 977A1D241ED035080078EBF1 /* Country.m */; };
 		97A9D8331ED0D85600775AF9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97A9D8321ED0D85600775AF9 /* MapKit.framework */; };
+		97A9D8351ED1434500775AF9 /* geo.json in Resources */ = {isa = PBXBuildFile; fileRef = 97A9D8341ED1434500775AF9 /* geo.json */; };
 		9DE0D6CA1ECEED010089C0F9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE0D6C91ECEED010089C0F9 /* main.m */; };
 		9DE0D6CD1ECEED010089C0F9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE0D6CC1ECEED010089C0F9 /* AppDelegate.m */; };
 		9DE0D6D01ECEED010089C0F9 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE0D6CF1ECEED010089C0F9 /* MainViewController.m */; };
@@ -29,6 +30,7 @@
 		977A1D231ED035080078EBF1 /* Country.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Country.h; sourceTree = "<group>"; };
 		977A1D241ED035080078EBF1 /* Country.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Country.m; sourceTree = "<group>"; };
 		97A9D8321ED0D85600775AF9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		97A9D8341ED1434500775AF9 /* geo.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = geo.json; sourceTree = "<group>"; };
 		9DE0D6C51ECEED010089C0F9 /* CountryBucketList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CountryBucketList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DE0D6C91ECEED010089C0F9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9DE0D6CB1ECEED010089C0F9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				977A1D211ED0349B0078EBF1 /* View Controllers */,
 				9DE0D6D41ECEED010089C0F9 /* Assets.xcassets */,
 				977A1D191ECFEAAC0078EBF1 /* FlagKit.xcassets */,
+				97A9D8341ED1434500775AF9 /* geo.json */,
 				9DE0D6D91ECEED010089C0F9 /* Info.plist */,
 				9DE0D6C81ECEED010089C0F9 /* Supporting Files */,
 			);
@@ -187,6 +190,7 @@
 				9DE0D6D81ECEED010089C0F9 /* LaunchScreen.storyboard in Resources */,
 				9DE0D6D51ECEED010089C0F9 /* Assets.xcassets in Resources */,
 				977A1D1A1ECFEAAC0078EBF1 /* FlagKit.xcassets in Resources */,
+				97A9D8351ED1434500775AF9 /* geo.json in Resources */,
 				9DE0D6D31ECEED010089C0F9 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

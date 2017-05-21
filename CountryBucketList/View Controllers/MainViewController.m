@@ -21,6 +21,7 @@
     NSMutableArray *bucketList;
     NSMutableArray *filteredBucketList;
     NSMutableArray *regions;
+    NSMutableDictionary *countryPolygons;
     
     UIPageViewController *pageViewController;
     NSMutableArray *pages;
@@ -77,6 +78,8 @@
     filteredBucketList = [[NSMutableArray alloc] init];
     regions = [[NSMutableArray alloc] initWithObjects:@"Anywhere", nil];
     
+    [self getCountryPolygons];
+    
     [self getCountries];
 }
 
@@ -112,8 +115,9 @@
                     
                     Country *country = [[Country alloc] init];
                     country.name = json[@"name"];
-                    country.alphaCode = json[@"alpha2Code"];
-                    country.flag = [UIImage imageNamed:country.alphaCode];
+                    country.alpha2Code = json[@"alpha2Code"];
+                    country.alpha3Code = json[@"alpha3Code"];
+                    country.flag = [UIImage imageNamed:country.alpha2Code];
                     country.region = json[@"subregion"];
                     country.capital = json[@"capital"];
                     if (![json[@"area"] isKindOfClass:[NSNull class]]) {
@@ -148,6 +152,11 @@
                     NSArray *coordinates = json[@"latlng"];
                     if (coordinates && coordinates.count > 0) {
                         country.coordinate = CLLocationCoordinate2DMake([coordinates[0] doubleValue], [coordinates[1] doubleValue]);
+                    }
+                    
+                    NSMutableArray *polygons = countryPolygons[country.alpha3Code];
+                    if (polygons) {
+                        country.polygons = polygons;
                     }
                     
                     [countries addObject:country];
@@ -191,7 +200,7 @@
         [pageViewController setViewControllers:@[pages[0]] direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:^(BOOL finished) {
             
             if (!weakSelf.mapView.hidden) {
-                [weakSelf addMapAnnotations];
+                [weakSelf addMapOverlays];
             }
         }];
     }
@@ -215,7 +224,7 @@
         [pageViewController setViewControllers:@[pages[1]] direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:^(BOOL finished) {
             
             if (!weakSelf.mapView.hidden) {
-                [weakSelf addMapAnnotations];
+                [weakSelf addMapOverlays];
             }
         }];
     }
@@ -236,7 +245,7 @@
         [self.viewModeButton setImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
         self.mapView.hidden = NO;
         
-        [self addMapAnnotations];
+        [self addMapOverlays];
     }
     else {
         [self.viewModeButton setImage:[UIImage imageNamed:@"map"] forState:UIControlStateNormal];
@@ -355,8 +364,77 @@
 
 #pragma mark - Map Methods
 
-- (void)addMapAnnotations {
+- (void)getCountryPolygons {
     
+    countryPolygons = [[NSMutableDictionary alloc] init];
+    
+    NSString *filename = [[NSBundle mainBundle] pathForResource:@"geo" ofType:@"json"];
+    NSData *data = [NSData dataWithContentsOfFile:filename];
+    NSArray *json = [[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil] objectForKey:@"features"];
+    for (NSDictionary *item in json) {
+        
+        NSString *alpha3Code = item[@"id"];
+        NSMutableArray *polygons = [[NSMutableArray alloc] init];
+        
+        NSDictionary *geometry = item[@"geometry"];
+        if ([geometry[@"type"] isEqualToString:@"Polygon"]) {
+           
+            MKPolygon *polygon = [self polygonFromCoordinates:geometry[@"coordinates"] title:alpha3Code];
+            if (polygon) {
+                [polygons addObject:polygon];
+            }
+        }
+        else if ([geometry[@"type"] isEqualToString:@"MultiPolygon"]){
+            
+            for (NSArray *coordinates in geometry[@"coordinates"]) {
+                
+                MKPolygon *polygon = [self polygonFromCoordinates:coordinates title:alpha3Code];
+                if (polygon) {
+                    [polygons addObject:polygon];
+                }
+            }
+        }
+        
+        countryPolygons[alpha3Code] = polygons;
+    }
+}
+
+- (MKPolygon *)polygonFromCoordinates:(NSArray *)coordinates title:(NSString *)title {
+    
+    NSMutableArray *interiorPolygons = [NSMutableArray arrayWithCapacity:coordinates.count-1];
+    for (int i = 1; i < coordinates.count; i++) {
+        [interiorPolygons addObject:[self polygonFromCoordinates:coordinates[i] interiorPolygons:nil]];
+    }
+    
+    MKPolygon *polygon = [self polygonFromCoordinates:coordinates[0] interiorPolygons:interiorPolygons];
+    polygon.title = title;
+    return polygon;
+}
+
+- (MKPolygon *)polygonFromCoordinates:(NSArray *)coordinates interiorPolygons:(NSArray *)interiorPolygons {
+    CLLocationCoordinate2D *polygonPoints = malloc(coordinates.count * sizeof(CLLocationCoordinate2D));
+    
+    NSInteger index = 0;
+    for (NSArray *point in coordinates) {
+        polygonPoints[index] = CLLocationCoordinate2DMake([point[1] floatValue], [point[0] floatValue]);
+        index++;
+    }
+    
+    MKPolygon *polygon;
+    if (interiorPolygons) {
+        polygon = [MKPolygon polygonWithCoordinates:polygonPoints count:coordinates.count interiorPolygons:interiorPolygons];
+    } else {
+        polygon = [MKPolygon polygonWithCoordinates:polygonPoints count:coordinates.count];
+    }
+    
+    free(polygonPoints);
+    
+    return polygon;
+}
+
+- (void)addMapOverlays {
+    
+    [self.mapView removeOverlays:self.mapView.overlays];
     [self.mapView removeAnnotations:self.mapView.annotations];
     
     if (currentPage == 0) { //All Countries
@@ -365,20 +443,33 @@
             
             MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
             annotation.coordinate = country.coordinate;
-            annotation.title = country.alphaCode;
+            annotation.title = country.alpha2Code;
             [self.mapView addAnnotation:annotation];
         }
     }
     else { //Bucket List
         
         for (Country *country in filteredBucketList) {
+            [self.mapView addOverlays:country.polygons];
+        }
+        
+        for (Country *country in filteredBucketList) {
             
             MKPointAnnotation *annotation = [[MKPointAnnotation alloc] init];
             annotation.coordinate = country.coordinate;
-            annotation.title = country.alphaCode;
+            annotation.title = country.alpha2Code;
             [self.mapView addAnnotation:annotation];
         }
     }
+}
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
+    
+    MKPolygonRenderer *renderer = [[MKPolygonRenderer alloc] initWithPolygon:overlay];
+    renderer.lineWidth = 1;
+    renderer.strokeColor = COLOR_PINK;
+    renderer.fillColor = [UIColor colorWithRed:254.0/255.0 green:0/255.0 blue:89.0/255.0 alpha:0.6];
+    return renderer;
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation {
@@ -395,13 +486,13 @@
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
     
-    NSString *alphaCode = view.annotation.title;
+    NSString *alpha2Code = view.annotation.title;
     Country *country;
     if (currentPage == 0) { //All Countries
         
         NSUInteger index = [filteredCountries indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
             Country *object = (Country *)obj;
-            return [object.alphaCode isEqualToString:alphaCode];
+            return [object.alpha2Code isEqualToString:alpha2Code];
         }];
         
         if (index != NSNotFound) {
@@ -412,7 +503,7 @@
         
         NSUInteger index = [filteredBucketList indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
             Country *object = (Country *)obj;
-            return [object.alphaCode isEqualToString:alphaCode];
+            return [object.alpha2Code isEqualToString:alpha2Code];
         }];
         
         if (index != NSNotFound) {
