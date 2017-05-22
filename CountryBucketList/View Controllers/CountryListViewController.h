@@ -19,6 +19,7 @@
 - (void)countryListViewController:(nullable CountryListViewController *)countryListViewController countrySelected:(nonnull Country *)country;
 - (void)countryListViewController:(nullable CountryListViewController *)countryListViewController countryAddedToBucketList:(nonnull Country *)country;
 - (void)countryListViewController:(nullable CountryListViewController *)countryListViewController countryRemovedFromBucketList:(nonnull Country *)country;
+- (void)countryListViewDidScroll:(nullable CountryListViewController *)countryListViewController;
 
 @end
 
@@ -27,6 +28,6 @@
 @property (nonatomic, weak, nullable) id <CountryListViewControllerDelegate> delegate;
 @property (nonatomic) int pageIndex;
 
-- (void)reloadData:(nullable NSMutableArray *)updatedCountries bucketList:(nonnull NSMutableArray *)updatedBucketList isASearch:(BOOL)isASearch;
+- (void)reloadData:(nullable NSMutableArray *)updatedCountries bucketList:(nonnull NSMutableArray *)updatedBucketList;
 
 @end

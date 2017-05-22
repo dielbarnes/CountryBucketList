@@ -18,7 +18,7 @@
 @property (nonatomic, strong) UIImage *flag;
 @property (nonatomic, strong) NSString *region;
 @property (nonatomic, strong) NSString *capital;
-@property (nonatomic) int area;
+@property (nonatomic) float area;
 @property (nonatomic) int population;
 @property (nonatomic, strong) NSMutableArray *languages;
 @property (nonatomic, strong) NSMutableArray *currencies;

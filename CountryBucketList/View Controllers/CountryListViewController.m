@@ -8,10 +8,9 @@
 
 #import "CountryListViewController.h"
 
-#define EMPTY_BUCKET_LIST @"Your bucket list is empty"
-#define NO_RESULTS @"No search results"
+#define NO_COUNTRIES_TEXT @"Nothing to show here!"
 
-@interface CountryListViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface CountryListViewController () <UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>
 {
     NSMutableArray *countries;
     NSMutableArray *bucketList;
@@ -37,11 +36,12 @@
     else { //Page: Bucket List
         
         if (!bucketList) {
-            
-            self.noCountriesLabel.text = EMPTY_BUCKET_LIST;
-            self.noCountriesLabel.hidden = NO;
-            
             bucketList = [[NSMutableArray alloc] init];
+        }
+        
+        if (bucketList.count == 0) {
+            self.noCountriesLabel.text = NO_COUNTRIES_TEXT;
+            self.noCountriesLabel.hidden = NO;
         }
     }
 }
@@ -54,7 +54,7 @@
 
 #pragma mark - Data Handling
 
-- (void)reloadData:(NSMutableArray *)updatedCountries bucketList:(NSMutableArray *)updatedBucketList isASearch:(BOOL)isASearch {
+- (void)reloadData:(NSMutableArray *)updatedCountries bucketList:(NSMutableArray *)updatedBucketList {
     
     if (self.pageIndex == 0) { //Page: All Countries
         
@@ -65,7 +65,7 @@
             self.noCountriesLabel.hidden = YES;
         }
         else {
-            self.noCountriesLabel.text = NO_RESULTS;
+            self.noCountriesLabel.text = NO_COUNTRIES_TEXT;
             self.noCountriesLabel.hidden = NO;
         }
         
@@ -75,26 +75,19 @@
     else { //Page: Bucket List
         
         if (!self.viewLoaded) { //Page is not loaded yet
-            
-            bucketList = [[NSMutableArray alloc] initWithArray:updatedBucketList];
+            bucketList = [[NSMutableArray alloc] init];
         }
         else {
-            
             [bucketList removeAllObjects];
-            
-            if (updatedBucketList.count > 0) {
-                [bucketList addObjectsFromArray:updatedBucketList];
-                self.noCountriesLabel.hidden = YES;
-            }
-            else {
-                if (isASearch) {
-                    self.noCountriesLabel.text = NO_RESULTS;
-                }
-                else {
-                    self.noCountriesLabel.text = EMPTY_BUCKET_LIST;
-                }
-                self.noCountriesLabel.hidden = NO;
-            }
+        }
+        
+        if (updatedBucketList.count > 0) {
+            [bucketList addObjectsFromArray:updatedBucketList];
+            self.noCountriesLabel.hidden = YES;
+        }
+        else {
+            self.noCountriesLabel.text = NO_COUNTRIES_TEXT;
+            self.noCountriesLabel.hidden = NO;
         }
     }
     
@@ -220,13 +213,19 @@
         [self.delegate countryListViewController:self countryRemovedFromBucketList:country];
         
         [bucketList removeObjectAtIndex:indexPath.row];
-        [self.countryListTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
+        [self.countryListTableView reloadData];
         
         if (bucketList.count == 0) {
-            self.noCountriesLabel.text = EMPTY_BUCKET_LIST;
+            self.noCountriesLabel.text = NO_COUNTRIES_TEXT;
             self.noCountriesLabel.hidden = NO;
         }
     }
+}
+
+#pragma mark - Scroll View Methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.delegate countryListViewDidScroll:self];
 }
 
 @end

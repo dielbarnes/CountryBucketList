@@ -31,6 +31,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.flagView.layer.shadowColor = [UIColor colorWithRed:179.0/255.0 green:0/255.0 blue:62.0/255.0 alpha:1.0].CGColor;
+    self.flagView.layer.shadowOffset = CGSizeMake(0, 1);
+    self.flagView.layer.shadowOpacity = 0.6;
+    self.flagView.layer.shadowRadius = 2.0;
+    
     self.infoTableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.infoTableView.frame.size.width, 10.0)];
     self.infoTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
@@ -104,23 +109,37 @@
         
         textLabel.text = @"Area";
         
-        if (_country.area > 1000) {
+        if (_country.area == 0) {
+            detailTextLabel.text = @"-";
+        }
+        else if (_country.area < 1000.0) {
+            detailTextLabel.text = [NSString stringWithFormat:@"%.2f sq. km", _country.area];
+        }
+        else if (_country.area < 1000000.0) {
             detailTextLabel.text = [NSString stringWithFormat:@"%.2fK sq. km", _country.area/1000.0];
         }
         else {
             detailTextLabel.text = [NSString stringWithFormat:@"%.2fM sq. km", _country.area/1000000.0];
         }
+        detailTextLabel.text = [detailTextLabel.text stringByReplacingOccurrencesOfString:@".00" withString:@""];
     }
     else if (indexPath.row == 2) {
         
         textLabel.text = @"Population";
         
-        if (_country.population > 1000000) {
+        if (_country.population < 1000) {
+            detailTextLabel.text = [NSString stringWithFormat:@"%i", _country.population];
+        }
+        else if (_country.population < 1000000) {
             detailTextLabel.text = [NSString stringWithFormat:@"%.2fK", _country.population/1000.0];
         }
-        else {
+        else if (_country.population < 1000000000) {
             detailTextLabel.text = [NSString stringWithFormat:@"%.2fM", _country.population/1000000.0];
         }
+        else {
+            detailTextLabel.text = [NSString stringWithFormat:@"%.2fB", _country.population/1000000000.0];
+        }
+        detailTextLabel.text = [detailTextLabel.text stringByReplacingOccurrencesOfString:@".00" withString:@""];
     }
     else if (indexPath.row == 3) {
         

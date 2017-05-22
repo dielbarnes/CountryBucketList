@@ -14,7 +14,7 @@
 #define COLOR_PINK [UIColor colorWithRed:254.0/255.0 green:0/255.0 blue:89.0/255.0 alpha:1.0]
 #define COLOR_TEXT [UIColor colorWithRed:16.0/255.0 green:50.0/255.0 blue:51.0/255.0 alpha:1.0]
 
-@interface MainViewController () <UISearchBarDelegate, UITextFieldDelegate, UIPageViewControllerDataSource, CountryListViewControllerDelegate, MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+@interface MainViewController () <UISearchBarDelegate, UITextFieldDelegate, UIPageViewControllerDataSource, CountryListViewControllerDelegate, MKMapViewDelegate, UIPickerViewDataSource, UIPickerViewDelegate, UIGestureRecognizerDelegate>
 {
     NSMutableArray *regions;
     NSMutableArray *countries;
@@ -72,6 +72,10 @@
     picker.backgroundColor = [UIColor colorWithRed:204.0/255.0 green:216.0/255.0 blue:221.0/255.0 alpha:1.0];
     self.regionTextField.inputView = picker;
     
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerTapGestureRecognized)];
+    gestureRecognizer.delegate = self;
+    [picker addGestureRecognizer:gestureRecognizer];
+    
     dimView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)];
     dimView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
     [dimView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideCountryView)]];
@@ -119,6 +123,8 @@
             
             if (data) {
                 
+                NSArray *savedBucketList = [[NSUserDefaults standardUserDefaults] objectForKey:@"bucketList"];
+                
                 NSArray *array = [NSJSONSerialization JSONObjectWithData:data options: NSJSONReadingMutableContainers error:nil];
                 for (NSDictionary *json in array) {
                     
@@ -140,7 +146,7 @@
                         country.capital = json[@"capital"];
                     }
                     if (![json[@"area"] isKindOfClass:[NSNull class]]) {
-                        country.area = [json[@"area"] intValue];
+                        country.area = [json[@"area"] floatValue];
                     }
                     if (![json[@"population"] isKindOfClass:[NSNull class]]) {
                         country.population = [json[@"population"] intValue];
@@ -179,6 +185,10 @@
                     
                     [countries addObject:country];
                     
+                    if (savedBucketList && [savedBucketList containsObject:country.alpha2Code]) {
+                        [bucketList addObject:country];
+                    }
+                    
                     if (country.region.length > 0 && ![regions containsObject:country.region]) {
                         [regions addObject:country.region];
                     }
@@ -187,6 +197,11 @@
                 NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES selector:@selector(localizedCaseInsensitiveCompare:)];
                 countries = [[countries sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
                 [filteredCountries addObjectsFromArray:countries];
+                if (bucketList.count > 0) {
+                    bucketList = [[bucketList sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
+                    [filteredBucketList addObjectsFromArray:bucketList];
+                }
+                regions = [[regions sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] mutableCopy];
                 
                 //Update UI
                 
@@ -195,8 +210,10 @@
                     [self.activityIndicator stopAnimating];
                     [self hideDimView];
                     
-                    CountryListViewController *countryListViewController = pages[0];
-                    [countryListViewController reloadData:filteredCountries bucketList:filteredBucketList isASearch:NO];
+                    CountryListViewController *allCountriesViewController = pages[0];
+                    [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList];
+                    CountryListViewController *bucketListViewController = pages[1];
+                    [bucketListViewController reloadData:nil bucketList:filteredBucketList];
                     
                     [picker reloadAllComponents];
                 });
@@ -258,6 +275,8 @@
 
 - (IBAction)viewModeButtonTapped {
     
+    [self resignTextFields];
+    
     if (self.mapView.hidden) {
         
         [self.viewModeButton setImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
@@ -283,23 +302,8 @@
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
     
-    if (searchText.length == 0) {
-        
-        [filteredCountries removeAllObjects];
-        [filteredCountries addObjectsFromArray:countries];
-        [filteredBucketList removeAllObjects];
-        [filteredBucketList addObjectsFromArray:bucketList];
-        
-        if (currentPage == 0) { //Page: All Countries
-            
-            CountryListViewController *countryListViewController = pages[0];
-            [countryListViewController reloadData:filteredCountries bucketList:filteredBucketList isASearch:NO];
-        }
-        else { //Page: Bucket List
-            
-            CountryListViewController *countryListViewController = pages[1];
-            [countryListViewController reloadData:nil bucketList:filteredBucketList isASearch:NO];
-        }
+    if (searchText.length == 0 && [self.regionTextField.text isEqualToString:@"Anywhere"]) {
+        [self removeFilters];
     }
     else {
         [self filterCountries];
@@ -316,8 +320,54 @@
     [self.searchBar resignFirstResponder];
 }
 
+- (void)removeFilters {
+    
+    [filteredCountries removeAllObjects];
+    [filteredCountries addObjectsFromArray:countries];
+    [filteredBucketList removeAllObjects];
+    [filteredBucketList addObjectsFromArray:bucketList];
+    
+    CountryListViewController *allCountriesViewController = pages[0];
+    [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList];
+    CountryListViewController *bucketListViewController = pages[1];
+    [bucketListViewController reloadData:nil bucketList:filteredBucketList];
+    
+    if (!self.mapView.hidden) {
+        [self addMapOverlays];
+    }
+}
+
 - (void)filterCountries {
     
+    NSPredicate *predicate;
+    
+    NSString *searchText = [self.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (searchText.length > 0) {
+        
+        if ([self.regionTextField.text isEqualToString:@"Anywhere"]) {
+            predicate = [NSPredicate predicateWithFormat:@"SELF.name CONTAINS[c] %@", searchText];
+        }
+        else {
+            predicate = [NSPredicate predicateWithFormat:@"SELF.name CONTAINS[c] %@ && SELF.region == %@", searchText, self.regionTextField.text];
+        }
+    }
+    else {
+        predicate = [NSPredicate predicateWithFormat:@"SELF.region == %@", self.regionTextField.text];
+    }
+    
+    [filteredCountries removeAllObjects];
+    [filteredCountries addObjectsFromArray:[countries filteredArrayUsingPredicate:predicate]];
+    [filteredBucketList removeAllObjects];
+    [filteredBucketList addObjectsFromArray:[bucketList filteredArrayUsingPredicate:predicate]];
+    
+    CountryListViewController *allCountriesViewController = pages[0];
+    [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList];
+    CountryListViewController *bucketListViewController = pages[1];
+    [bucketListViewController reloadData:nil bucketList:filteredBucketList];
+    
+    if (!self.mapView.hidden) {
+        [self addMapOverlays];
+    }
 }
 
 #pragma mark - Text Field Methods
@@ -411,11 +461,13 @@
     [filteredBucketList addObject:country];
     filteredBucketList = [[filteredBucketList sortedArrayUsingDescriptors:@[sortDescriptor]] mutableCopy];
     
+    [self updateSavedBucketList];
+    
     //Current page is always 0 (All Countries)
     //Update Bucket List page
     
     CountryListViewController *bucketListViewController = pages[1];
-    [bucketListViewController reloadData:nil bucketList:filteredBucketList isASearch:NO];
+    [bucketListViewController reloadData:nil bucketList:filteredBucketList];
 }
 
 - (void)countryListViewController:(CountryListViewController *)countryListViewController countryRemovedFromBucketList:(Country *)country {
@@ -434,18 +486,24 @@
     }];
     [filteredBucketList removeObjectAtIndex:index2];
     
+    [self updateSavedBucketList];
+    
     //Update the other page
     
     if (currentPage == 0) { //Page: All Countries
         
         CountryListViewController *bucketListViewController = pages[1];
-        [bucketListViewController reloadData:nil bucketList:filteredBucketList isASearch:NO];
+        [bucketListViewController reloadData:nil bucketList:filteredBucketList];
     }
     else { //Page: Bucket List
         
         CountryListViewController *allCountriesViewController = pages[0];
-        [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList isASearch:NO];
+        [allCountriesViewController reloadData:filteredCountries bucketList:filteredBucketList];
     }
+}
+
+- (void)countryListViewDidScroll:(CountryListViewController *)countryListViewController {
+    [self resignTextFields];
 }
 
 #pragma mark - Map Methods
@@ -573,6 +631,8 @@
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
     
+    [mapView deselectAnnotation:view.annotation animated:NO];
+    
     NSString *alpha2Code = view.annotation.title;
     
     Country *country;
@@ -601,6 +661,10 @@
     }
     
     [self showCountryView:country];
+}
+
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated {
+    [self resignTextFields];
 }
 
 #pragma mark - Country View Methods
@@ -672,8 +736,45 @@
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    
     self.regionTextField.text = regions[row];
+    
+    NSString *searchText = [self.searchBar.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    if ([self.regionTextField.text isEqualToString:@"Anywhere"] && searchText.length == 0) {
+        [self removeFilters];
+    }
+    else {
+        [self filterCountries];
+    }
+}
+
+- (void)pickerTapGestureRecognized {
     [self.regionTextField resignFirstResponder];
+}
+
+#pragma mark - Gesture Recognizer Methods
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+#pragma mark - User Defaults
+
+- (void)updateSavedBucketList {
+    
+    if (bucketList.count > 0) {
+        
+        NSMutableArray *array = [[NSMutableArray alloc] init];
+        for (Country *country in bucketList) {
+            [array addObject:country.alpha2Code];
+        }
+        [[NSUserDefaults standardUserDefaults] setObject:array forKey:@"bucketList"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+    else {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"bucketList"];
+    }
 }
 
 @end
