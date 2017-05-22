@@ -8,7 +8,7 @@
 
 #import "CountryListViewController.h"
 
-#define EMPTY_BUCKETLIST @"Your bucket list is empty"
+#define EMPTY_BUCKET_LIST @"Your bucket list is empty"
 #define NO_RESULTS @"No search results"
 
 @interface CountryListViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -29,16 +29,16 @@
     
     self.countryListTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
-    if (self.pageIndex == 0) { //All Countries
+    if (self.pageIndex == 0) { //Page: All Countries
         
         countries = [[NSMutableArray alloc] init];
         bucketList = [[NSMutableArray alloc] init];
     }
-    else { //Bucket List
+    else { //Page: Bucket List
         
         if (!bucketList) {
             
-            self.noCountriesLabel.text = EMPTY_BUCKETLIST;
+            self.noCountriesLabel.text = EMPTY_BUCKET_LIST;
             self.noCountriesLabel.hidden = NO;
             
             bucketList = [[NSMutableArray alloc] init];
@@ -52,43 +52,53 @@
     [self.delegate countryListViewController:self pageDidAppear:self.pageIndex];
 }
 
-- (void)reloadData:(NSMutableArray *)updatedCountries bucketList:(NSMutableArray *)updatedBucketList {
+#pragma mark - Data Handling
+
+- (void)reloadData:(NSMutableArray *)updatedCountries bucketList:(NSMutableArray *)updatedBucketList isASearch:(BOOL)isASearch {
     
-    if (self.pageIndex == 0) {
-        [countries removeAllObjects];
-        [countries addObjectsFromArray:updatedCountries];
-    }
-    
-    if (!self.viewLoaded) { //Bucket List page not loaded yet
+    if (self.pageIndex == 0) { //Page: All Countries
         
-        bucketList = [[NSMutableArray alloc] initWithArray:updatedBucketList];
-    }
-    else {
+        [countries removeAllObjects];
+        
+        if (updatedCountries.count > 0) {
+            [countries addObjectsFromArray:updatedCountries];
+            self.noCountriesLabel.hidden = YES;
+        }
+        else {
+            self.noCountriesLabel.text = NO_RESULTS;
+            self.noCountriesLabel.hidden = NO;
+        }
+        
         [bucketList removeAllObjects];
         [bucketList addObjectsFromArray:updatedBucketList];
+    }
+    else { //Page: Bucket List
         
-        if (self.pageIndex == 1) {
+        if (!self.viewLoaded) { //Page is not loaded yet
             
-            if (bucketList.count > 0) {
+            bucketList = [[NSMutableArray alloc] initWithArray:updatedBucketList];
+        }
+        else {
+            
+            [bucketList removeAllObjects];
+            
+            if (updatedBucketList.count > 0) {
+                [bucketList addObjectsFromArray:updatedBucketList];
                 self.noCountriesLabel.hidden = YES;
             }
             else {
-                self.noCountriesLabel.text = EMPTY_BUCKETLIST;
+                if (isASearch) {
+                    self.noCountriesLabel.text = NO_RESULTS;
+                }
+                else {
+                    self.noCountriesLabel.text = EMPTY_BUCKET_LIST;
+                }
                 self.noCountriesLabel.hidden = NO;
             }
         }
     }
     
     [self.countryListTableView reloadData];
-}
-
-- (void)showNoResultsText {
-    self.noCountriesLabel.text = NO_RESULTS;
-    self.noCountriesLabel.hidden = NO;
-}
-
-- (void)hideNoResultsText {
-    self.noCountriesLabel.hidden = YES;
 }
 
 #pragma mark - Table View Methods
@@ -99,10 +109,10 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
-    if (self.pageIndex == 0) {
+    if (self.pageIndex == 0) { //Page: All Countries
         return countries.count;
     }
-    else {
+    else { //Page: Bucket List
         return bucketList.count;
     }
 }
@@ -122,9 +132,7 @@
     Country *country;
     UIButton *heartButton = [UIButton buttonWithType:UIButtonTypeCustom];
     
-    if (self.pageIndex == 0)  { //All Countries
-        
-        //Get country
+    if (self.pageIndex == 0)  { //Page: All Countries
         
         country = countries[indexPath.row];
         
@@ -142,7 +150,8 @@
             [heartButton setImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
         }
     }
-    else { //Bucket List
+    else { //Page: Bucket List
+        
         country = bucketList[indexPath.row];
         [heartButton setImage:[UIImage imageNamed:@"heart-filled"] forState:UIControlStateNormal];
     }
@@ -152,7 +161,7 @@
     
     heartButton.frame = CGRectMake(0, 0, 22.0, 22.0);
     heartButton.tag = indexPath.row;
-    [heartButton addTarget:self action:@selector(accessoryButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+    [heartButton addTarget:self action:@selector(heartButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [cell setAccessoryView:heartButton];
     
     return cell;
@@ -162,17 +171,28 @@
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [self.delegate countryListViewController:self countrySelected:countries[indexPath.row]];
+    Country *country;
+    if (self.pageIndex == 0)  { //Page: All Countries
+        country = countries[indexPath.row];
+    }
+    else { //Page: Bucket List
+        country = bucketList[indexPath.row];
+    }
+    
+    [self.delegate countryListViewController:self countrySelected:country];
 }
 
-- (void)accessoryButtonTapped:(UIButton *)sender {
+#pragma mark - Button Methods
+
+- (void)heartButtonTapped:(UIButton *)sender {
     
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
     
-    Country *country;
-    if (self.pageIndex == 0)  { //All Countries
+    if (self.pageIndex == 0)  { //Page: All Countries
         
-        country = countries[indexPath.row];
+        Country *country = countries[indexPath.row];
+        
+        //Check if country is in bucket list
         
         NSUInteger index = [bucketList indexOfObjectPassingTest:^(id obj, NSUInteger idx, BOOL *stop) {
             Country *object = (Country *)obj;
@@ -182,26 +202,28 @@
         if (index == NSNotFound) { //Add to bucket list
             
             [self.delegate countryListViewController:self countryAddedToBucketList:country];
+            
             [bucketList addObject:country];
+            [sender setImage:[UIImage imageNamed:@"heart-filled"] forState:UIControlStateNormal];
         }
         else { //Remove from bucket list
 
             [self.delegate countryListViewController:self countryRemovedFromBucketList:country];
+            
             [bucketList removeObjectAtIndex:index];
+            [sender setImage:[UIImage imageNamed:@"heart"] forState:UIControlStateNormal];
         }
-
-        [self.countryListTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     }
-    else { //Bucket List
+    else { //Page: Bucket List
         
-        country = bucketList[indexPath.row];
+        Country *country = bucketList[indexPath.row];
         [self.delegate countryListViewController:self countryRemovedFromBucketList:country];
         
         [bucketList removeObjectAtIndex:indexPath.row];
         [self.countryListTableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationTop];
         
         if (bucketList.count == 0) {
-            self.noCountriesLabel.text = EMPTY_BUCKETLIST;
+            self.noCountriesLabel.text = EMPTY_BUCKET_LIST;
             self.noCountriesLabel.hidden = NO;
         }
     }

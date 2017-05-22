@@ -10,9 +10,12 @@
 
 @interface CountryViewController () <UITableViewDataSource, UITableViewDelegate>
 {
-    NSString *languages;
-    NSString *currencies;
+    Country *_country;
+    NSString *languagesString;
+    NSString *currenciesString;
 }
+
+@property (nonatomic, strong) Country *country;
 
 @property (nonatomic, strong) IBOutlet UIImageView *flagView;
 @property (nonatomic, strong) IBOutlet UILabel *nameLabel;
@@ -23,6 +26,8 @@
 
 @implementation CountryViewController
 
+@synthesize country = _country;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -30,25 +35,29 @@
     self.infoTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
-- (void)loadData {
+#pragma mark - Data Handling
+
+- (void)loadData:(Country *)country {
     
-    self.flagView.image = self.country.flag;
-    self.nameLabel.text = self.country.name;
-    self.regionLabel.text = self.country.region;
+    _country = country;
     
-    languages = @"";
-    for (NSString *language in self.country.languages) {
-        languages = [languages stringByAppendingString:language];
-        if (language != self.country.languages.lastObject) {
-            languages = [languages stringByAppendingString:@", "];
+    self.flagView.image = _country.flag;
+    self.nameLabel.text = _country.name;
+    self.regionLabel.text = _country.region;
+    
+    languagesString = @"";
+    for (NSString *language in _country.languages) {
+        languagesString = [languagesString stringByAppendingString:language];
+        if (language != _country.languages.lastObject) {
+            languagesString = [languagesString stringByAppendingString:@", "];
         }
     }
     
-    currencies = @"";
-    for (NSString *currency in self.country.currencies) {
-        currencies = [currencies stringByAppendingString:currency];
-        if (currency != self.country.currencies.lastObject) {
-            currencies = [currencies stringByAppendingString:@", "];
+    currenciesString = @"";
+    for (NSString *currency in _country.currencies) {
+        currenciesString = [currenciesString stringByAppendingString:currency];
+        if (currency != _country.currencies.lastObject) {
+            currenciesString = [currenciesString stringByAppendingString:@", "];
         }
     }
     
@@ -83,27 +92,45 @@
     if (indexPath.row == 0) {
         
         textLabel.text = @"Capital";
-        detailTextLabel.text = self.country.capital;
+        
+        if (_country.capital.length > 0) {
+            detailTextLabel.text = _country.capital;
+        }
+        else {
+            detailTextLabel.text = @"None";
+        }
     }
     else if (indexPath.row == 1) {
         
         textLabel.text = @"Area";
-        detailTextLabel.text = [NSString stringWithFormat:@"%.2fM sq. km", self.country.area/1000000.0];
+        
+        if (_country.area > 1000) {
+            detailTextLabel.text = [NSString stringWithFormat:@"%.2fK sq. km", _country.area/1000.0];
+        }
+        else {
+            detailTextLabel.text = [NSString stringWithFormat:@"%.2fM sq. km", _country.area/1000000.0];
+        }
     }
     else if (indexPath.row == 2) {
         
         textLabel.text = @"Population";
-        detailTextLabel.text = [NSString stringWithFormat:@"%.2fM", self.country.population/1000000.0];
+        
+        if (_country.population > 1000000) {
+            detailTextLabel.text = [NSString stringWithFormat:@"%.2fK", _country.population/1000.0];
+        }
+        else {
+            detailTextLabel.text = [NSString stringWithFormat:@"%.2fM", _country.population/1000000.0];
+        }
     }
     else if (indexPath.row == 3) {
         
         textLabel.text = @"Languages";
-        detailTextLabel.text = languages;
+        detailTextLabel.text = languagesString;
     }
     else {
         
         textLabel.text = @"Currencies";
-        detailTextLabel.text = currencies;
+        detailTextLabel.text = currenciesString;
         
         cell.separatorInset = UIEdgeInsetsMake(0, 3000.0, 0, 0);
     }

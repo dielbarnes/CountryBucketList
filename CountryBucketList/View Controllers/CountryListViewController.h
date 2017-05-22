@@ -27,8 +27,6 @@
 @property (nonatomic, weak, nullable) id <CountryListViewControllerDelegate> delegate;
 @property (nonatomic) int pageIndex;
 
-- (void)reloadData:(nullable NSMutableArray *)updatedCountries bucketList:(nonnull NSMutableArray *)updatedBucketList;
-- (void)showNoResultsText;
-- (void)hideNoResultsText;
+- (void)reloadData:(nullable NSMutableArray *)updatedCountries bucketList:(nonnull NSMutableArray *)updatedBucketList isASearch:(BOOL)isASearch;
 
 @end

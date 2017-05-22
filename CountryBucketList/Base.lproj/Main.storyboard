@@ -36,22 +36,19 @@
                                             <outlet property="delegate" destination="BYZ-38-t0r" id="7zQ-IO-cme"/>
                                         </connections>
                                     </searchBar>
-                                    <button opaque="NO" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vyv-gj-4d5">
-                                        <rect key="frame" x="133" y="47" width="131" height="24"/>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Anywhere" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lhQ-wc-49a">
+                                        <rect key="frame" x="75" y="47" width="225" height="24"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="24" id="r4p-Qj-VCi"/>
-                                            <constraint firstAttribute="width" constant="131" id="rpb-cK-yaO"/>
+                                            <constraint firstAttribute="height" constant="24" id="2VF-Iv-G7i"/>
+                                            <constraint firstAttribute="width" constant="225" id="mBy-Av-iRR"/>
                                         </constraints>
+                                        <color key="textColor" red="0.062745098040000002" green="0.1960784314" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
                                         <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="17"/>
-                                        <inset key="titleEdgeInsets" minX="-37" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <inset key="imageEdgeInsets" minX="115" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                        <state key="normal" title="Anywhere" image="dropdown-arrow">
-                                            <color key="titleColor" red="0.062745098039215685" green="0.19607843137254902" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
-                                        </state>
+                                        <textInputTraits key="textInputTraits"/>
                                         <connections>
-                                            <action selector="showPicker" destination="BYZ-38-t0r" eventType="touchUpInside" id="h5b-2g-DJo"/>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="vfL-Mm-qHC"/>
                                         </connections>
-                                    </button>
+                                    </textField>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RqD-Q7-EAi">
                                         <rect key="frame" x="0.0" y="80" width="375" height="1"/>
                                         <color key="backgroundColor" red="0.80000000000000004" green="0.84705882352941175" blue="0.8666666666666667" alpha="1" colorSpace="calibratedRGB"/>
@@ -63,14 +60,14 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="RqD-Q7-EAi" secondAttribute="bottom" id="7Q3-Vw-Brj"/>
-                                    <constraint firstItem="vyv-gj-4d5" firstAttribute="top" secondItem="j3s-VF-e0J" secondAttribute="bottom" constant="1" id="LYo-8X-WiY"/>
+                                    <constraint firstItem="lhQ-wc-49a" firstAttribute="top" secondItem="j3s-VF-e0J" secondAttribute="bottom" constant="1" id="Hip-O0-26V"/>
                                     <constraint firstItem="RqD-Q7-EAi" firstAttribute="leading" secondItem="ALn-x8-g8r" secondAttribute="leading" id="MOn-KE-bN6"/>
                                     <constraint firstAttribute="trailing" secondItem="RqD-Q7-EAi" secondAttribute="trailing" id="Nkl-7y-udl"/>
                                     <constraint firstItem="j3s-VF-e0J" firstAttribute="leading" secondItem="ALn-x8-g8r" secondAttribute="leading" constant="15" id="TVn-dl-uHq"/>
                                     <constraint firstAttribute="trailing" secondItem="j3s-VF-e0J" secondAttribute="trailing" constant="15" id="rw9-uy-aaW"/>
                                     <constraint firstItem="j3s-VF-e0J" firstAttribute="top" secondItem="ALn-x8-g8r" secondAttribute="top" constant="2" id="sFD-3F-Ug3"/>
                                     <constraint firstAttribute="height" constant="81" id="xzb-Kk-bex"/>
-                                    <constraint firstItem="vyv-gj-4d5" firstAttribute="centerX" secondItem="ALn-x8-g8r" secondAttribute="centerX" constant="11" id="zv3-gU-rrM"/>
+                                    <constraint firstItem="lhQ-wc-49a" firstAttribute="centerX" secondItem="ALn-x8-g8r" secondAttribute="centerX" id="yrP-s9-j0V"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NJS-Ft-6Zh">
@@ -83,18 +80,6 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="GBk-Mc-mOC"/>
                                 </connections>
                             </mapView>
-                            <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZcC-kQ-PXu">
-                                <rect key="frame" x="0.0" y="603" width="375" height="216"/>
-                                <color key="backgroundColor" red="0.80000000000000004" green="0.84705882349999995" blue="0.86666666670000003" alpha="1" colorSpace="calibratedRGB"/>
-                                <color key="tintColor" red="0.062745098040000002" green="0.1960784314" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="216" id="4Xu-TD-jQP"/>
-                                </constraints>
-                                <connections>
-                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="Su0-7A-ATe"/>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="mXr-Gw-LWd"/>
-                                </connections>
-                            </pickerView>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Wu0-BJ-WUH">
                                 <rect key="frame" x="177" y="150" width="20" height="20"/>
                                 <constraints>
@@ -107,7 +92,6 @@
                         <constraints>
                             <constraint firstItem="Wu0-BJ-WUH" firstAttribute="top" secondItem="ALn-x8-g8r" secondAttribute="bottom" constant="69" id="8fW-Yy-jFf"/>
                             <constraint firstAttribute="trailing" secondItem="ALn-x8-g8r" secondAttribute="trailing" id="GBS-5f-jBp"/>
-                            <constraint firstAttribute="trailing" secondItem="ZcC-kQ-PXu" secondAttribute="trailing" id="Hop-Mg-3gV"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="r4C-so-MgQ" secondAttribute="bottom" id="Jw7-9M-hMt"/>
                             <constraint firstAttribute="trailing" secondItem="NJS-Ft-6Zh" secondAttribute="trailing" id="WhI-ly-bO8"/>
                             <constraint firstItem="ALn-x8-g8r" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="ZMF-ld-RJ8"/>
@@ -115,10 +99,8 @@
                             <constraint firstItem="r4C-so-MgQ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="hXw-mL-Bg5"/>
                             <constraint firstAttribute="trailing" secondItem="r4C-so-MgQ" secondAttribute="trailing" id="j29-ga-bLW"/>
                             <constraint firstItem="Wu0-BJ-WUH" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="k1a-uT-4X8"/>
-                            <constraint firstItem="ZcC-kQ-PXu" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="nTL-pY-cY9"/>
                             <constraint firstItem="ALn-x8-g8r" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="prP-Yi-A5V"/>
                             <constraint firstItem="NJS-Ft-6Zh" firstAttribute="top" secondItem="ALn-x8-g8r" secondAttribute="bottom" id="pz4-Pa-9cn"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="ZcC-kQ-PXu" secondAttribute="bottom" constant="-216" id="xo4-Ja-los"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="NJS-Ft-6Zh" secondAttribute="bottom" id="yrI-NF-xKx"/>
                             <constraint firstItem="NJS-Ft-6Zh" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="zWK-QR-pMw"/>
                         </constraints>
@@ -201,9 +183,7 @@
                         <outlet property="bucketListButton" destination="SZq-Ej-jXj" id="17b-4S-1F4"/>
                         <outlet property="mapView" destination="r4C-so-MgQ" id="xkg-mL-9bl"/>
                         <outlet property="pageView" destination="NJS-Ft-6Zh" id="65n-cB-ov6"/>
-                        <outlet property="picker" destination="ZcC-kQ-PXu" id="mcT-x5-jdd"/>
-                        <outlet property="pickerBottomSpace" destination="xo4-Ja-los" id="Pgq-sU-uCE"/>
-                        <outlet property="regionButton" destination="vyv-gj-4d5" id="aQ8-gD-gcX"/>
+                        <outlet property="regionTextField" destination="lhQ-wc-49a" id="gQ3-Zx-k4u"/>
                         <outlet property="searchBar" destination="j3s-VF-e0J" id="6YC-yh-hTo"/>
                         <outlet property="searchFilterView" destination="ALn-x8-g8r" id="nIt-mm-HGq"/>
                         <outlet property="viewModeButton" destination="XRC-L1-GYj" id="AOG-Ch-IAf"/>
@@ -276,7 +256,7 @@
                                         <rect key="frame" x="0.0" y="28" width="280" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TRi-bQ-yU7" id="2xJ-3Y-anp">
-                                            <rect key="frame" x="0.0" y="0.0" width="280" height="49"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="280" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="123" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xLk-ic-sj9">
@@ -436,7 +416,6 @@
     </scenes>
     <resources>
         <image name="bucketlist" width="24" height="24"/>
-        <image name="dropdown-arrow" width="16" height="16"/>
         <image name="map" width="16" height="16"/>
     </resources>
 </document>

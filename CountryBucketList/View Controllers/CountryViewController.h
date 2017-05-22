@@ -11,8 +11,6 @@
 
 @interface CountryViewController : UIViewController
 
-@property (nonatomic, strong) Country *country;
-
-- (void)loadData;
+- (void)loadData:(Country *)country;
 
 @end
