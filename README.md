@@ -1,5 +1,5 @@
 # CountryBucketList
-Integrates REST Countries API (https://restcountries.eu)
+Provides some information about countries through REST Countries API (https://restcountries.eu) and allows users to add countries they want to go to in a bucket list
 
 <img src="https://img.shields.io/badge/ios-10-8800A7.svg"> <img src="https://img.shields.io/badge/language-objective--c-8800A7.svg">
 
