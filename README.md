@@ -5,7 +5,7 @@ Provides some information about countries and allows users to add countries they
 
 ### Features
 Integrates REST Countries API (https://restcountries.eu)  
-Integrates Map Kit
+Uses MapKit
 
 ### Resources
 Icons are made by me  
