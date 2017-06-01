@@ -10,6 +10,7 @@
 #import "MainViewController.h"
 #import "CountryListViewController.h"
 #import "CountryViewController.h"
+#import "CustomTextField.h"
 
 #define COLOR_PINK [UIColor colorWithRed:254.0/255.0 green:0/255.0 blue:89.0/255.0 alpha:1.0]
 #define COLOR_TEXT [UIColor colorWithRed:16.0/255.0 green:50.0/255.0 blue:51.0/255.0 alpha:1.0]
@@ -27,6 +28,8 @@
     NSMutableArray *pages;
     int currentPage;
     
+    BOOL mapShouldSetRegion;
+    
     UIPickerView *picker;
     
     CountryViewController *countryViewController;
@@ -38,7 +41,7 @@
 @property (nonatomic, strong) IBOutlet UIButton *viewModeButton;
 @property (nonatomic, strong) IBOutlet UIView *searchFilterView;
 @property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
-@property (nonatomic, strong) IBOutlet UITextField *regionTextField;
+@property (nonatomic, strong) IBOutlet CustomTextField *regionTextField;
 @property (nonatomic, strong) IBOutlet UIView *pageView;
 @property (nonatomic, strong) IBOutlet MKMapView *mapView;
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *activityIndicator;
@@ -75,6 +78,8 @@
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(pickerTapGestureRecognized)];
     gestureRecognizer.delegate = self;
     [picker addGestureRecognizer:gestureRecognizer];
+    
+    mapShouldSetRegion = YES;
     
     dimView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, [[UIScreen mainScreen] bounds].size.width, [[UIScreen mainScreen] bounds].size.height)];
     dimView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.6];
@@ -281,6 +286,15 @@
         
         [self.viewModeButton setImage:[UIImage imageNamed:@"list"] forState:UIControlStateNormal];
         self.mapView.hidden = NO;
+        
+        if (mapShouldSetRegion) {
+            
+            MKCoordinateSpan span = MKCoordinateSpanMake(60.0, 60.0);
+            MKCoordinateRegion region = MKCoordinateRegionMake(self.mapView.region.center, span);
+            [self.mapView setRegion:region animated:NO];
+            
+            mapShouldSetRegion = NO;
+        }
         
         [self addMapOverlays];
     }

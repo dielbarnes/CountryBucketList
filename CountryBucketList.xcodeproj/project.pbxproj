@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9706E3B51EE027D90012EA26 /* CustomTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 9706E3B41EE027D90012EA26 /* CustomTextField.m */; };
 		977A1D1A1ECFEAAC0078EBF1 /* FlagKit.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 977A1D191ECFEAAC0078EBF1 /* FlagKit.xcassets */; };
 		977A1D1D1ED02ABB0078EBF1 /* CountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 977A1D1C1ED02ABB0078EBF1 /* CountryViewController.m */; };
 		977A1D201ED02BE30078EBF1 /* CountryListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 977A1D1F1ED02BE30078EBF1 /* CountryListViewController.m */; };
@@ -18,10 +19,11 @@
 		9DE0D6D01ECEED010089C0F9 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9DE0D6CF1ECEED010089C0F9 /* MainViewController.m */; };
 		9DE0D6D31ECEED010089C0F9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DE0D6D11ECEED010089C0F9 /* Main.storyboard */; };
 		9DE0D6D51ECEED010089C0F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9DE0D6D41ECEED010089C0F9 /* Assets.xcassets */; };
-		9DE0D6D81ECEED010089C0F9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9DE0D6D61ECEED010089C0F9 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9706E3B31EE027D90012EA26 /* CustomTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTextField.h; sourceTree = "<group>"; };
+		9706E3B41EE027D90012EA26 /* CustomTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTextField.m; sourceTree = "<group>"; };
 		977A1D191ECFEAAC0078EBF1 /* FlagKit.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FlagKit.xcassets; sourceTree = "<group>"; };
 		977A1D1B1ED02ABB0078EBF1 /* CountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountryViewController.h; sourceTree = "<group>"; };
 		977A1D1C1ED02ABB0078EBF1 /* CountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountryViewController.m; sourceTree = "<group>"; };
@@ -39,7 +41,6 @@
 		9DE0D6CF1ECEED010089C0F9 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		9DE0D6D21ECEED010089C0F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9DE0D6D41ECEED010089C0F9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		9DE0D6D71ECEED010089C0F9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9DE0D6D91ECEED010089C0F9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,6 +56,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9706E3B21EE026A80012EA26 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				9706E3B31EE027D90012EA26 /* CustomTextField.h */,
+				9706E3B41EE027D90012EA26 /* CustomTextField.m */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		977A1D211ED0349B0078EBF1 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -105,11 +115,11 @@
 		9DE0D6C71ECEED010089C0F9 /* CountryBucketList */ = {
 			isa = PBXGroup;
 			children = (
-				9DE0D6D61ECEED010089C0F9 /* LaunchScreen.storyboard */,
 				9DE0D6D11ECEED010089C0F9 /* Main.storyboard */,
 				9DE0D6CB1ECEED010089C0F9 /* AppDelegate.h */,
 				9DE0D6CC1ECEED010089C0F9 /* AppDelegate.m */,
 				977A1D221ED034E60078EBF1 /* Models */,
+				9706E3B21EE026A80012EA26 /* Views */,
 				977A1D211ED0349B0078EBF1 /* View Controllers */,
 				9DE0D6D41ECEED010089C0F9 /* Assets.xcassets */,
 				977A1D191ECFEAAC0078EBF1 /* FlagKit.xcassets */,
@@ -187,7 +197,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9DE0D6D81ECEED010089C0F9 /* LaunchScreen.storyboard in Resources */,
 				9DE0D6D51ECEED010089C0F9 /* Assets.xcassets in Resources */,
 				977A1D1A1ECFEAAC0078EBF1 /* FlagKit.xcassets in Resources */,
 				97A9D8351ED1434500775AF9 /* geo.json in Resources */,
@@ -206,6 +215,7 @@
 				977A1D1D1ED02ABB0078EBF1 /* CountryViewController.m in Sources */,
 				9DE0D6CD1ECEED010089C0F9 /* AppDelegate.m in Sources */,
 				977A1D201ED02BE30078EBF1 /* CountryListViewController.m in Sources */,
+				9706E3B51EE027D90012EA26 /* CustomTextField.m in Sources */,
 				977A1D251ED035080078EBF1 /* Country.m in Sources */,
 				9DE0D6CA1ECEED010089C0F9 /* main.m in Sources */,
 			);
@@ -220,14 +230,6 @@
 				9DE0D6D21ECEED010089C0F9 /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		9DE0D6D61ECEED010089C0F9 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				9DE0D6D71ECEED010089C0F9 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -327,12 +329,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 6DZGSGTVV9;
 				INFOPLIST_FILE = CountryBucketList/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dielbarnes.CountryBucketList;
+				PRODUCT_BUNDLE_IDENTIFIER = co.dielbarnes.CountryBucketList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -341,12 +344,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 6DZGSGTVV9;
 				INFOPLIST_FILE = CountryBucketList/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.dielbarnes.CountryBucketList;
+				PRODUCT_BUNDLE_IDENTIFIER = co.dielbarnes.CountryBucketList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
