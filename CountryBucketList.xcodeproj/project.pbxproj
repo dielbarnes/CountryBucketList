@@ -169,8 +169,7 @@
 				TargetAttributes = {
 					9DE0D6C41ECEED010089C0F9 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 6DZGSGTVV9;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -331,11 +330,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 6DZGSGTVV9;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CountryBucketList/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = co.dielbarnes.CountryBucketList;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dielbarnes.CountryBucketList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -346,11 +345,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 6DZGSGTVV9;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = CountryBucketList/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = co.dielbarnes.CountryBucketList;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dielbarnes.CountryBucketList;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
