@@ -106,7 +106,7 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="bPq-vM-246">
-                        <barButtonItem key="leftBarButtonItem" style="plain" id="1Jf-Ac-Htu">
+                        <barButtonItem key="leftBarButtonItem" id="1Jf-Ac-Htu">
                             <view key="customView" contentMode="scaleToFill" id="Uru-RX-5G8">
                                 <rect key="frame" x="16" y="0.0" width="200" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -152,7 +152,7 @@
                                 </constraints>
                             </view>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" style="plain" id="kck-2M-m8j">
+                        <barButtonItem key="rightBarButtonItem" id="kck-2M-m8j">
                             <view key="customView" contentMode="scaleToFill" id="iv1-bN-nYn">
                                 <rect key="frame" x="323" y="0.0" width="36" height="44"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -256,7 +256,7 @@
                                         <rect key="frame" x="0.0" y="28" width="280" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TRi-bQ-yU7" id="2xJ-3Y-anp">
-                                            <rect key="frame" x="0.0" y="0.0" width="280" height="49"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="280" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" tag="123" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xLk-ic-sj9">
@@ -363,11 +363,11 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-pb-igE" id="uW2-2J-nFx">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hhK-L1-ML4">
-                                                    <rect key="frame" x="15" y="0.0" width="345" height="43"/>
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="43.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="17"/>
                                                     <color key="textColor" red="0.062745098040000002" green="0.1960784314" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
