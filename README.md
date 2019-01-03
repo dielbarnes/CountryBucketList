@@ -7,7 +7,6 @@ Provides some information about countries and allows users to add countries they
 Integrates REST Countries API (https://restcountries.eu)  
 Uses MapKit
 
-### Resources
-Icons are made by me  
+### Resources 
 Flag assets are from https://github.com/madebybowtie/FlagKit  
 Geographic geometries are from https://github.com/johan/world.geo.json
